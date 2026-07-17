@@ -11,4 +11,4 @@ npx firebase-tools login
 
 # 2. Deploy ke Firebase Hosting
 echo "🚀 Memulakan pendeployan..."
-npx firebase-tools deploy --only hosting --project finance-pulse
+npx firebase-tools deploy --only hosting --project finance-pulse-8b283
