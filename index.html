@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Pulse — Pemantauan Kewangan Pintar</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase SDK Compat -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <!-- Chart.js CDN for high-performance charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- DESKTOP SIDEBAR -->
+    <aside id="sidebar" class="sidebar" style="display: none;">
+      <div class="brand">
+        <div class="brand-icon">FP</div>
+        <span class="brand-name">Finance Pulse</span>
+        <span id="db-status-badge" class="badge" style="background: rgba(255,255,255,0.05); color: var(--text-secondary); margin-left: auto; font-size: 9px; padding: 2px 6px;">DB: Local</span>
+      </div>
+      
+      <nav class="nav-menu">
+        <li class="nav-item active" data-section="dashboard">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" /></svg>
+            Dashboard
+          </a>
+        </li>
+        <li class="nav-item" data-section="transactions">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+            Transaksi
+          </a>
+        </li>
+        <li class="nav-item" data-section="budgets">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1m3.599-4.599A1.5 1.5 0 1114 11.25M16.483 17.5a9 9 0 01-8.966 0M3 20.75h18" /></svg>
+            Bajet Kategori
+          </a>
+        </li>
+        <li class="nav-item" data-section="goals">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            Matlamat
+          </a>
+        </li>
+        <li class="nav-item" data-section="recurring-bills">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            Komitmen & Bil
+          </a>
+        </li>
+        <li class="nav-item" data-section="settings">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            Tetapan
+          </a>
+        </li>
+      </nav>
+      
+      <div class="user-profile-summary">
+        <div class="user-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name">Memuatkan...</div>
+          <div class="user-role">Pengguna Biasa</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MOBILE NAVIGATION SYSTEM -->
+    <div class="mobile-header">
+      <div class="brand" style="border: none; padding: 0;">
+        <div class="brand-icon" style="width: 32px; height: 32px; font-size: 16px;">FP</div>
+        <span class="brand-name" style="font-size: 18px;">Finance Pulse</span>
+        <span id="mobile-db-status-badge" class="badge" style="background: rgba(255,255,255,0.05); color: var(--text-secondary); margin-left: 8px; font-size: 9px; padding: 2px 6px;">DB: Local</span>
+      </div>
+      <div class="user-avatar" style="width: 32px; height: 32px; font-size: 12px;">A</div>
+    </div>
+    
+    <nav class="mobile-nav">
+      <ul class="mobile-nav-list">
+        <li class="mobile-nav-item active" data-section="dashboard">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" /></svg>
+            Dashboard
+          </a>
+        </li>
+        <li class="mobile-nav-item" data-section="transactions">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" /></svg>
+            Transaksi
+          </a>
+        </li>
+        <li class="mobile-nav-item" data-section="budgets">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" /></svg>
+            Bajet
+          </a>
+        </li>
+        <li class="mobile-nav-item" data-section="goals">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            Matlamat
+          </a>
+        </li>
+        <li class="mobile-nav-item" data-section="recurring-bills">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10" /></svg>
+            Bil
+          </a>
+        </li>
+        <li class="mobile-nav-item" data-section="settings">
+          <a href="#">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg>
+            Tetapan
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- MAIN APP WRAPPER -->
+    <main class="main-content">
+      
+      <!-- ==========================================
+      0. ONBOARDING / INITIAL SETUP PAGE
+      ========================================== -->
+      <section id="onboarding" class="page-section">
+        <div class="setup-box">
+          <div class="setup-logo">
+            <div class="brand-icon" style="width: 60px; height: 60px; font-size: 32px; border-radius: 12px;">FP</div>
+          </div>
+          <div class="card setup-card">
+            <div class="setup-welcome">
+              <h2>Selamat Datang ke Finance Pulse</h2>
+              <p>Sediakan profil kewangan anda atau pilih data simulasi bank untuk meneroka terus.</p>
+            </div>
+            
+            <form id="onboard-form">
+              <div class="form-group">
+                <label for="onboard-name">Nama Penuh</label>
+                <input type="text" id="onboard-name" class="form-control" placeholder="cth. Ahmad Bin Abdullah" required>
+              </div>
+              <div class="form-group">
+                <label for="onboard-currency">Mata Wang Utama</label>
+                <select id="onboard-currency" class="form-control">
+                  <option value="RM">Ringgit Malaysia (RM)</option>
+                  <option value="USD">US Dollar ($)</option>
+                  <option value="SGD">Singapore Dollar (S$)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="onboard-balance">Baki Pembukaan Akaun (RM)</label>
+                <input type="number" id="onboard-balance" class="form-control" placeholder="cth. 5000" min="0" step="0.01">
+              </div>
+              
+              <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
+                <button type="submit" class="btn btn-primary" style="justify-content: center; width: 100%;">
+                  Mulakan Akaun Baru
+                </button>
+                
+                <div style="text-align: center; color: var(--text-muted); font-size: 13px; margin: 8px 0;">atau</div>
+                
+                <button type="button" id="onboard-load-sim" class="btn btn-success" style="justify-content: center; width: 100%;">
+                  <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Guna Penyata ABC Bank (Simulasi)
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+      1. DASHBOARD PAGE
+      ========================================== -->
+      <section id="dashboard" class="page-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Dashboard Kewangan</h1>
+            <p class="page-subtitle">Gambaran kedudukan kewangan dan aktiviti terkini anda.</p>
+          </div>
+          <div class="header-actions">
+            <button id="quick-add-expense" class="btn btn-danger">
+              <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Belanja Baru
+            </button>
+            <button id="quick-add-income" class="btn btn-success">
+              <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Dana Masuk
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary Cards Grid -->
+        <div class="summary-grid">
+          <!-- Total Balance Card -->
+          <div class="card summary-card">
+            <div class="summary-icon icon-blue">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+            </div>
+            <div class="summary-info">
+              <span class="summary-label">Jumlah Baki Bersih</span>
+              <span class="summary-value" id="dash-balance">Loading...</span>
+            </div>
+          </div>
+          
+          <!-- Income Card -->
+          <div class="card summary-card">
+            <div class="summary-icon icon-green">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+            </div>
+            <div class="summary-info">
+              <span class="summary-label">Pendapatan Bulan Ini</span>
+              <span class="summary-value" id="dash-income">Loading...</span>
+            </div>
+          </div>
+          
+          <!-- Expense Card -->
+          <div class="card summary-card">
+            <div class="summary-icon icon-red">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" /></svg>
+            </div>
+            <div class="summary-info">
+              <span class="summary-label">Perbelanjaan Bulan Ini</span>
+              <span class="summary-value" id="dash-expense">Loading...</span>
+            </div>
+          </div>
+          
+          <!-- Net Cash Flow Card -->
+          <div class="card summary-card">
+            <div class="summary-icon icon-purple">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+            </div>
+            <div class="summary-info">
+              <span class="summary-label">Aliran Tunai Bersih</span>
+              <span class="summary-value" id="dash-cashflow">Loading...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid">
+          <div class="card chart-card">
+            <div class="chart-header">
+              <span class="chart-title">Trend Baki & Aliran Tunai (Mei 2026)</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="cashFlowChartCanvas"></canvas>
+            </div>
+          </div>
+          
+          <div class="card chart-card">
+            <div class="chart-header">
+              <span class="chart-title">Pecahan Perbelanjaan</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="categoryChartCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Split Grid for Widgets -->
+        <div class="dashboard-split">
+          <!-- Recent Transactions -->
+          <div class="card">
+            <div class="chart-header">
+              <span class="chart-title">Aktiviti Transaksi Terkini</span>
+              <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="showSection('transactions')">Lihat Semua</button>
+            </div>
+            
+            <div class="table-container">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Tarikh</th>
+                    <th>Transaksi</th>
+                    <th>Jenis</th>
+                    <th>Kategori</th>
+                    <th style="text-align: right;">Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-transactions-list">
+                  <!-- JS Injection -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Side column widgets (Accounts & Alerts) -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Accounts List Widget -->
+            <div class="card">
+              <div class="chart-header" style="margin-bottom: 16px;">
+                <span class="chart-title">Akaun Kewangan</span>
+              </div>
+              <div class="accounts-list" id="dash-accounts-list">
+                <!-- JS Injection -->
+              </div>
+            </div>
+
+            <!-- Notifications / Budget Alerts -->
+            <div class="card">
+              <div class="chart-header" style="margin-bottom: 16px;">
+                <span class="chart-title">Notifikasi & Amaran</span>
+              </div>
+              <div class="notif-list" id="dash-notif-list">
+                <!-- JS Injection -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+      2. TRANSACTIONS PAGE
+      ========================================== -->
+      <section id="transactions" class="page-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Senarai Transaksi</h1>
+            <p class="page-subtitle">Papar, cari, tapis dan eksport rekod kewangan peribadi.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="exportTransactionsCSV()">
+              <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+              Eksport CSV
+            </button>
+            <button class="btn btn-primary" onclick="showAddTransactionModal()">
+              <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+              Tambah Transaksi
+            </button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 24px;">
+          <!-- Filter Controls Bar -->
+          <div class="filters-bar">
+            <div class="search-box">
+              <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <input type="text" id="search-tx" class="form-control" placeholder="Cari butiran atau peniaga...">
+            </div>
+            
+            <div class="filters-group">
+              <select id="filter-type" class="form-control filter-select">
+                <option value="">Semua Jenis</option>
+                <option value="income">Wang Masuk</option>
+                <option value="expense">Wang Keluar</option>
+                <option value="transfer">Pindahan</option>
+              </select>
+              
+              <select id="filter-category" class="form-control filter-select">
+                <!-- JS injection -->
+              </select>
+              
+              <select id="filter-account" class="form-control filter-select">
+                <!-- JS injection -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Transactions Table -->
+          <div class="table-container">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Tarikh</th>
+                  <th>Butiran / Peniaga</th>
+                  <th>Jenis</th>
+                  <th>Kategori</th>
+                  <th>Akaun</th>
+                  <th style="text-align: right;">Jumlah</th>
+                  <th style="width: 80px; text-align: right;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="transactions-table-body">
+                <!-- JS Injection -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+      3. BUDGETS PAGE
+      ========================================== -->
+      <section id="budgets" class="page-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Bajet Perbelanjaan</h1>
+            <p class="page-subtitle">Bandingkan perbelanjaan semasa dengan had bajet bulanan.</p>
+          </div>
+        </div>
+
+        <div class="budget-grid" id="budgets-grid">
+          <!-- Budget Cards (JS injected) -->
+        </div>
+      </section>
+
+      <!-- ==========================================
+      4. SAVINGS GOALS PAGE
+      ========================================== -->
+      <section id="goals" class="page-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Matlamat Simpanan</h1>
+            <p class="page-subtitle">Jejaki kemajuan matlamat dan sumbangan simpanan anda.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" onclick="showAddGoalModal()">
+              <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+              Tambah Matlamat
+            </button>
+          </div>
+        </div>
+
+        <div class="goals-grid" id="goals-grid">
+          <!-- Savings Cards (JS injected) -->
+        </div>
+      </section>
+
+      <!-- ==========================================
+      5. RECURRING BILLS PAGE
+      ========================================== -->
+      <section id="recurring-bills" class="page-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Komitmen & Bil Berulang</h1>
+            <p class="page-subtitle">Jadualkan dan jejaki bil bulanan agar tidak terlepas tarikh akhir.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" onclick="showAddBillModal()">
+              <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+              Tambah Bil
+            </button>
+          </div>
+        </div>
+
+        <div class="bills-grid" id="bills-grid">
+          <!-- Bill Cards (JS Injected) -->
+        </div>
+      </section>
+
+      <!-- ==========================================
+      6. SETTINGS PAGE
+      ========================================== -->
+      <section id="settings" class="page-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Tetapan Sistem</h1>
+            <p class="page-subtitle">Urus profil pengguna, tetapan mata wang, dan pilihan data.</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Profile Settings -->
+          <div class="card">
+            <h3 style="margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Profil Pengguna</h3>
+            <form id="settings-profile-form">
+              <div class="form-group">
+                <label for="set-name">Nama Penuh</label>
+                <input type="text" id="set-name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="set-email">Alamat E-mel</label>
+                <input type="email" id="set-email" class="form-control">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="set-currency">Mata Wang Utama</label>
+                  <select id="set-currency" class="form-control">
+                    <option value="RM">Ringgit Malaysia (RM)</option>
+                    <option value="USD">US Dollar ($)</option>
+                    <option value="SGD">Singapore Dollar (S$)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="set-lang">Bahasa Sistem</label>
+                  <select id="set-lang" class="form-control">
+                    <option value="ms">Bahasa Melayu</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="set-startday">Hari Permulaan Bulan Kewangan</label>
+                <input type="number" id="set-startday" class="form-control" min="1" max="28">
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: 100%; justify-content: center;">
+                Kemas Kini Profil
+              </button>
+            </form>
+          </div>
+
+          <!-- Data management options -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Pengurusan Data</h3>
+              <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                Semua maklumat kewangan anda disimpan secara eksklusif dalam simpanan pelayar tempatan anda (Local Storage) untuk keselamatan privasi penuh.
+              </p>
+              
+              <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 24px;">
+                <h4 style="color: var(--color-warning); font-size: 14px; margin-bottom: 6px; font-weight: 600;">Data Simulasi Bank</h4>
+                <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">
+                  Anda boleh memuatkan semula data simulasi asal dari **ABC Bank Penyata Akaun** (Ahmad Bin Abdullah) pada bila-bila masa. Ini akan menimpa sebarang rekod tambahan yang telah anda masukkan secara manual.
+                </p>
+              </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <button class="btn btn-success" style="justify-content: center; width: 100%;" onclick="handleLoadSimulationData()">
+                <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.79" /></svg>
+                Muat semula Data Simulasi ABC Bank
+              </button>
+              <button class="btn btn-danger" style="justify-content: center; width: 100%;" onclick="handleResetData()">
+                <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                Set Semula & Padam Semua Data
+              </button>
+            </div>
+          </div>
+
+          <!-- Firebase Config Card -->
+          <div class="card" style="grid-column: 1 / -1;">
+            <h3 style="margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Konfigurasi Firebase Database</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+              Hubungkan aplikasi ini ke akaun **Firebase Cloud Firestore** anda sendiri untuk sandaran dan penyegerakan data awan secara masa nyata.
+            </p>
+            <form id="settings-firebase-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fb-api-key">API Key</label>
+                  <input type="text" id="fb-api-key" class="form-control" placeholder="AIzaSy...">
+                </div>
+                <div class="form-group">
+                  <label for="fb-project-id">Project ID</label>
+                  <input type="text" id="fb-project-id" class="form-control" placeholder="my-finance-app">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fb-auth-domain">Auth Domain</label>
+                  <input type="text" id="fb-auth-domain" class="form-control" placeholder="my-finance-app.firebaseapp.com">
+                </div>
+                <div class="form-group">
+                  <label for="fb-app-id">App ID</label>
+                  <input type="text" id="fb-app-id" class="form-control" placeholder="1:12345:web:abcd...">
+                </div>
+              </div>
+              <div style="display: flex; gap: 12px; margin-top: 10px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">Simpan & Sambung Firebase</button>
+                <button type="button" id="fb-clear-btn" class="btn btn-secondary" style="justify-content: center;">Putuskan Sambungan</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==========================================
+  MODAL: TAMBAH TRANSAKSI
+  ========================================== -->
+  <div class="modal-overlay" id="tx-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Tambah Transaksi Baru</h3>
+        <button class="modal-close" onclick="closeAddTransactionModal()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <form id="add-tx-form">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tx-type">Jenis Transaksi</label>
+              <select id="tx-type" class="form-control" onchange="toggleTransferDestination()">
+                <option value="expense">Wang Keluar (Belanja)</option>
+                <option value="income">Wang Masuk (Pendapatan)</option>
+                <option value="transfer">Pindahan Wang</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tx-amount">Amaun (RM)</label>
+              <input type="number" id="tx-amount" class="form-control" placeholder="0.00" step="0.01" min="0.01" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tx-account">Akaun Sumber</label>
+              <select id="tx-account" class="form-control" required>
+                <!-- JS Injected -->
+              </select>
+            </div>
+            
+            <div class="form-group" id="transfer-dest-row" style="display: none;">
+              <label for="tx-dest-account">Akaun Destinasi</label>
+              <select id="tx-dest-account" class="form-control">
+                <!-- JS Injected -->
+              </select>
+            </div>
+            
+            <div class="form-group" id="tx-category-group">
+              <label for="tx-category">Kategori</label>
+              <select id="tx-category" class="form-control">
+                <!-- JS Injected -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tx-date">Tarikh</label>
+            <input type="date" id="tx-date" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="tx-merchant">Peniaga / Pihak Kedua</label>
+            <input type="text" id="tx-merchant" class="form-control" placeholder="cth. TNB, Kedai Runcit, Ahmad Rizal">
+          </div>
+          
+          <div class="form-group">
+            <label for="tx-description">Penerangan Ringkas</label>
+            <input type="text" id="tx-description" class="form-control" placeholder="cth. Pembayaran QR untuk runcit">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAddTransactionModal()">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+  MODAL: URUS BAJET CATEGORY
+  ========================================== -->
+  <div class="modal-overlay" id="budget-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Urus Had Bajet Kategori</h3>
+        <button class="modal-close" onclick="closeSetBudgetModal()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <form id="set-budget-form">
+        <div class="modal-body">
+          <div style="background: rgba(255, 255, 255, 0.02); padding: 12px 16px; border-radius: var(--radius-sm); border-left: 3px solid var(--color-primary); margin-bottom: 20px;">
+            <span style="font-size: 13px; color: var(--text-secondary);">Mengeset bajet untuk kategori:</span>
+            <div id="budget-category-label" style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-top: 4px;">Makanan</div>
+          </div>
+          <div class="form-group">
+            <label for="budget-amount">Had Bajet Bulanan (RM)</label>
+            <input type="number" id="budget-amount" class="form-control" placeholder="cth. 500" min="0" step="1" required>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Setkan 0 untuk mengeluarkan had bajet bagi kategori ini.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeSetBudgetModal()">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Had Bajet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+  MODAL: TAMBAH MATLAMAT
+  ========================================== -->
+  <div class="modal-overlay" id="goal-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Cipta Matlamat Simpanan</h3>
+        <button class="modal-close" onclick="closeAddGoalModal()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <form id="add-goal-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="goal-name">Nama Matlamat</label>
+            <input type="text" id="goal-name" class="form-control" placeholder="cth. Deposit Beli Rumah, Dana Kecemasan" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="goal-target-amount">Jumlah Sasaran (RM)</label>
+              <input type="number" id="goal-target-amount" class="form-control" placeholder="0.00" min="0.01" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label for="goal-current-amount">Amaun Permulaan (RM)</label>
+              <input type="number" id="goal-current-amount" class="form-control" placeholder="0.00" min="0" step="0.01">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="goal-target-date">Tarikh Sasaran</label>
+              <input type="date" id="goal-target-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="goal-account">Hubungkan Akaun Simpanan</label>
+              <select id="goal-account" class="form-control" required>
+                <!-- JS Injected -->
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAddGoalModal()">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Matlamat</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+  MODAL: TAMBAH BIL BERULANG
+  ========================================== -->
+  <div class="modal-overlay" id="bill-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Tambah Komitmen / Bil Berulang</h3>
+        <button class="modal-close" onclick="closeAddBillModal()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <form id="add-bill-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="bill-name">Nama Bil / Komitmen</label>
+            <input type="text" id="bill-name" class="form-control" placeholder="cth. Sewa Rumah, Bil Elektrik, Langganan Netflix" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bill-amount">Amaun Anggaran (RM)</label>
+              <input type="number" id="bill-amount" class="form-control" placeholder="0.00" min="0.01" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label for="bill-due-date">Tarikh Akhir (Hari dalam bulan)</label>
+              <input type="number" id="bill-due-date" class="form-control" placeholder="cth. 15" min="1" max="28" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bill-category">Kategori Perbelanjaan</label>
+              <select id="bill-category" class="form-control" required>
+                <!-- JS Injected -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="bill-frequency">Kekerapan</label>
+              <select id="bill-frequency" class="form-control">
+                <option value="Bulanan">Setiap Bulan (Bulanan)</option>
+                <option value="Mingguan">Setiap Minggu</option>
+                <option value="Tahunan">Setiap Tahun</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAddBillModal()">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Bil</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LOAD APPLICATION SCRIPTS -->
+  <script src="data.js"></script>
+  <script src="firebase-db.js"></script>
+  <script src="app.js"></script>
+  <!-- CUSTOM CONFIRM MODAL (replaces window.confirm suppressed by Chrome) -->
+  <div id="confirm-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+    <div style="background:var(--glass-bg,#1e293b); border:1px solid var(--border-color,rgba(255,255,255,0.1)); border-radius:16px; padding:32px 28px; max-width:360px; width:90%; box-shadow:0 25px 50px rgba(0,0,0,0.5); text-align:center;">
+      <div style="width:52px;height:52px;background:rgba(239,68,68,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <svg style="width:26px;height:26px;color:#ef4444;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+      </div>
+      <h3 style="margin:0 0 8px; font-size:17px; font-weight:700; color:var(--text-primary,#f1f5f9);">Padam Transaksi?</h3>
+      <p id="confirm-modal-msg" style="margin:0 0 24px; font-size:14px; color:var(--text-secondary,#94a3b8);">Tindakan ini tidak boleh dibatalkan.</p>
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <button id="confirm-modal-cancel" class="btn btn-secondary" style="flex:1; padding:10px;">Batal</button>
+        <button id="confirm-modal-ok" class="btn btn-primary" style="flex:1; padding:10px; background:#ef4444; border-color:#ef4444;">Ya, Padam</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

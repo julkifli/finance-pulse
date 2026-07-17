@@ -1,0 +1,19 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Scratch / decoded / raw files
+decoded_pdf_text.txt
+extracted_text.txt
+*.py
+
+# PDF source file (simulated statement data)
+*.pdf
+
+# Node (if added later)
+node_modules/
+package-lock.json
