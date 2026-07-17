@@ -1,0 +1,16 @@
+{
+  "name": "finance-pulse",
+  "version": "1.0.0",
+  "description": "Finance Pulse - Aplikasi Pemantauan Kewangan Peribadi",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

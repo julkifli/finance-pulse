@@ -13,4 +13,4 @@ if [ -n "$OLD_PID" ]; then
   sleep 1
 fi
 
-python3 -m http.server 3000
+node server.js

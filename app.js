@@ -40,8 +40,9 @@ async function initApp() {
   updateDbStatusBadge();
   updateProfileDisplay();
 
-  // If Firebase is enabled, pull the latest data from Cloud Firestore
-  if (typeof isFirebaseEnabled !== 'undefined' && isFirebaseEnabled()) {
+  // If Firebase is enabled, pull the latest data from Cloud Firestore (if SQL not active)
+  const hasSql = (typeof isSqlEnabled !== 'undefined' && isSqlEnabled());
+  if (!hasSql && typeof isFirebaseEnabled !== 'undefined' && isFirebaseEnabled()) {
     const cloudState = await loadFromFirebase(state.profile);
     if (cloudState) {
       state = cloudState;
@@ -66,10 +67,12 @@ async function initApp() {
   }
 }
 
-// Save state to localStorage and Firestore
+// Save state to localStorage and Firestore / SQL Database
 function saveState() {
   localStorage.setItem('finance_pulse_data', JSON.stringify(state));
-  if (typeof isFirebaseEnabled !== 'undefined' && isFirebaseEnabled()) {
+  if (typeof isSqlEnabled !== 'undefined' && isSqlEnabled()) {
+    saveToSql(state);
+  } else if (typeof isFirebaseEnabled !== 'undefined' && isFirebaseEnabled()) {
     saveToFirebase(state);
   }
 }
@@ -77,9 +80,10 @@ function saveState() {
 // Update DB connection indicator
 function updateDbStatusBadge() {
   const isFb = (typeof isFirebaseEnabled !== 'undefined' && isFirebaseEnabled());
-  const text = isFb ? "DB: Firebase Cloud" : "DB: Local";
-  const bg = isFb ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)";
-  const color = isFb ? "var(--color-success)" : "var(--text-secondary)";
+  const isSql = (typeof isSqlEnabled !== 'undefined' && isSqlEnabled());
+  const text = isSql ? "DB: SQL Database" : (isFb ? "DB: Firebase Cloud" : "DB: Local");
+  const bg = (isSql || isFb) ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)";
+  const color = (isSql || isFb) ? "var(--color-success)" : "var(--text-secondary)";
   
   const desktopBadge = document.getElementById('db-status-badge');
   if (desktopBadge) {

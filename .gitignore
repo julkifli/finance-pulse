@@ -17,3 +17,7 @@ extracted_text.txt
 # Node (if added later)
 node_modules/
 package-lock.json
+.env
+.env.local
+.venv/
+.firebase/
